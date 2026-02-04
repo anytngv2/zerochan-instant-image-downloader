@@ -46,3 +46,4 @@ A userscript that adds instant download buttons to images on Zerochan.net, allow
 1. After installing the script, visit any Zerochan gallery page.
 2. You'll see "Download" buttons overlaid on each image thumbnail.
 3. Click the button to instantly download the full-resolution image.
+
