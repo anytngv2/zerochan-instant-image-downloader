@@ -8,6 +8,7 @@ A userscript that adds instant download buttons to images on Zerochan.net, allow
 [![Greasy Fork Version](https://img.shields.io/greasyfork/v/565142?logo=greasyfork&color=%23670000)](https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader)
 [![GitHub Release](https://img.shields.io/github/v/release/AnytngV2/Zerochan-Instant-Image-Downloader?logo=github)](https://github.com/AnytngV2/Zerochan-Instant-Image-Downloader/releases/latest)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/AnytngV2/Zerochan-Instant-Image-Downloader?logo=github)](https://github.com/AnytngV2/Zerochan-Instant-Image-Downloader/commits/main)
+![GitHub file size in bytes](https://img.shields.io/github/size/AnytngV2/zerochan-instant-image-downloader/script.js)
 
 <img src="preview/preview2.png" alt="Zerochan Instant Image Downloader Preview" width="400"/></i>
 
