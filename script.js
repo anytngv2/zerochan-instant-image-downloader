@@ -2,7 +2,7 @@
 // @name 			Zerochan instant image downloader
 // @namespace 		https://github.com/anytngv2/zerochan-instant-image-downloader
 // @supportURL 		https://github.com/anytngv2/zerochan-instant-image-downloader
-// @version 		2.3
+// @version 		2.4.1
 // @description 	Allow to instant download images from Zerochan
 // @author 			AnytngV2
 // @match 			https://*.zerochan.net/*
@@ -27,8 +27,33 @@
 
 	// ! information added in the footer of zerochan for information about the script
 	const INFOTAG = {
-		"version": "2.3",
+		"version": "2.4.1",
 	}
+
+
+	/**
+	 * Download an image from Zerochan using its API.
+	 * @param {string} id The image ID to download.
+	 * @param {boolean} [phoneMode=false] If true, the script will fetch the json with &screen=1 to get json data because phone mode doesn't load the json by default.
+	 * @returns {Promise<boolean>} True if the download was successful, false otherwise.
+	 */
+	async function downloadImageById(id, phoneMode = false) {
+
+		let buildURLJSON = `https://www.zerochan.net/${id}?json`;
+		let buildUrl = buildURLJSON;
+
+		if (phoneMode) {
+			buildUrl += '&screen=1';
+		}
+
+		const response = await fetch(buildUrl);
+		const data = await response.json();
+
+		const imageUrl = data.full;
+
+		return await downloadItem(imageUrl, `zerochan_${id}.jpg`);
+	}
+
 
 
 	/**
@@ -53,7 +78,7 @@
 				if (altContainer) {
 					console.log(`[ANTNG2] Found alternative container: ${id}`);
 					thumbsContainer = altContainer;
-					if (id === "thumbs"){
+					if (id === "thumbs") {
 						phoneMode = true;
 					}
 					break;
@@ -72,12 +97,12 @@
 		thumbItems.forEach(item => {
 			// Mark item as processed
 			item.classList.add('has-download-btn');
-			
+
 			const button = document.createElement('button');
 			button.className = 'anytngv2-instant-download-button';
-			
+
 			// Add style for the button
-			if(!phoneMode){
+			if (!phoneMode) {
 				button.style.cssText = `
 					position: absolute;
 					top: 5px;
@@ -94,7 +119,7 @@
 					transform:rotate(15deg);
 					border: 2px solid #555;
 				`;
-			} else{
+			} else {
 				button.style.cssText = `
 					position: absolute;
 					top: 5px;
@@ -113,7 +138,7 @@
 					width: unset !important;
 				`;
 			}
-			
+
 			// Add hover effects
 			button.addEventListener('mouseover', () => {
 				button.style.transform = 'scale(1.1) rotate(15deg)';
@@ -121,25 +146,25 @@
 			button.addEventListener('mouseout', () => {
 				button.style.transform = 'scale(1) rotate(15deg)';
 			});
-			
+
 			button.innerText = 'Download';
 
 			// Get image URL for the API
 			const linkElement = item.querySelector('a.thumb');
 			if (!linkElement) return;
-			
+
 			let link = linkElement.href;
 			let id = link.split('/').pop(); // Get the id from the URL
 
 			// Hide p if found
 			let p = item.querySelector('div > p');
-			if(p) p.style.display = 'none';
+			if (p) p.style.display = 'none';
 
-			if(!id){
+			if (!id) {
 				console.log("[ANTNG2] Could not get id from link:", link);
 				return;
 			}
-			
+
 			item.appendChild(button);
 
 			// Add click event to download image
@@ -152,39 +177,31 @@
 				let buildURLJSON = `https://www.zerochan.net/${id}?json`;
 				let buildUrl = buildURLJSON;
 
-				if (phoneMode){
+				if (phoneMode) {
 					buildUrl += '&screen=1';
 				}
 
-				try{
-					const response = await fetch(buildUrl);
-					const data = await response.json();
-
-					// Get the full size image URL
-					const imageUrl = data.full;
+				try {
 
 					button.innerText = 'Downloading...';
 					button.style.border = '2px solid #ff0';
 
-					let r = await downloadItem(imageUrl, `zerochan_${id}.jpg`);
-					if(r){
+					let r = await downloadImageById(id, phoneMode);
+
+					if (r) {
 						button.innerText = 'Downloaded';
 						button.style.border = '2px solid #0f0';
 					} else {
 						button.innerText = 'Failed';
 						button.style.border = '2px solid #f00';
 					}
-				
-					if(phoneMode){
-						await fetch(buildURLJSON + '&mobile=1');
-					}
 
 				}
-				catch(error){
-					console.error('[ANTNG2] Error fetching image (url: ' + buildUrl + ') data:', error);
-					button.innerText = 'Error: Fetch JSON Fail';
-					button.style.border = '2px solid #f00';
+				catch (err) {
+					console.error(err);
+					button.innerText = 'Error';
 				}
+
 
 				// Reset downloading state after 2 seconds
 				setTimeout(() => {
@@ -262,7 +279,177 @@
 		}
 	});
 
+
+
+
+
+
+
+
+
+
+	// ? =================================
+	// ? bulk download system
+	// ? =================================
+	const menu = document.querySelector('div#menu');
+	let menuHTML = `
+	<style>
+		#antg2-progressBar {
+			background-color: #e6e6e6;
+			border: 1px solid #0088ff;
+			height: 10px;
+			width: 100%;
+			border-radius: 5px;
+		}
+		#antg2-progressBar::-webkit-progress-bar {
+			background-color: #e6e6e6;
+			border: 1px solid #0088ff;
+			height: 10px;
+			width: 100%;
+			border-radius: 5px;
+		}
+		#antg2-progressBar::-webkit-progress-value {
+			background-color: #fe8001;
+			border-radius: 5px;
+		}
+		#antg2-progressBar::-moz-progress-bar {
+			background-color: #fe8001;
+			border-radius: 5px;
+		}
+	</style>
+	<div style="margin:10px 0 0 0;background-color:#e6e6e6;color:#000;padding:5px; display: flex; flex-direction: column; gap:9px;">
+	<p style="margin:0;padding:0;text-align:center;"><b>Zerochan Instant Image Downloader Tool</b></p>
+		<div style="display:flex; justify-content: space-between; gap:5px;">
+			<p style="margin:0;padding:0;text-align:left;" id="antg2-title">[Waiting for actions]</p>
+			<p style="text-align:right; margin:0;padding:0">Download status: <span id="antg2-countBulk">0</span> / <b style="color: #fe8001;" id="antg2-totalBulk">0</b></p>
+		</div>
+		<progress id="antg2-progressBar" value="0" max="100"></progress>
+		<button onclick="bulkDownload()">Start bulk download</button>
+	</div>
+	`;
+
+	if (menu) {
+		let menuDiv = document.createElement('div');
+		menuDiv.innerHTML = menuHTML;
+		menu.appendChild(menuDiv);
+	} else {
+		// if no menu we put it as a floating area
+		let menuDiv = document.createElement('div');
+		menuDiv.innerHTML = menuHTML;
+		menuDiv.style.cssText = `
+			position:fixed;
+			bottom:5px;
+			right:5px;
+			z-index: 9999;
+		`;
+		document.body.appendChild(menuDiv);
+	}
+
+	window.bulkDownload = async function () {
+
+		const titleStatus = document.querySelector("#antg2-title");
+		const countStatus = document.querySelector("#antg2-countBulk");
+		const progressBar = document.querySelector("#antg2-progressBar");
+
+		const buttons = document.querySelectorAll('.anytngv2-instant-download-button');
+
+		const total = buttons.length;
+		let count = 0;
+
+		if (total === 0) {
+			titleStatus.innerText = "[Nothing found]";
+			return;
+		}
+
+		progressBar.max = total;
+		progressBar.value = 0;
+		countStatus.innerText = 0;
+		document.querySelector("#antg2-totalBulk").innerText = total;
+
+		for (const button of buttons) {
+
+			const id = button.parentElement
+				.querySelector('a.thumb')
+				.href.split('/')
+				.pop();
+
+			await downloadImageById(id);
+
+			titleStatus.innerText = `[Processing for ${id}]`;
+
+			count++;
+			countStatus.innerText = count;
+			progressBar.value = count;
+
+			// pause après download
+			await new Promise(r => setTimeout(r, 1350));
+
+			// every 11 downloads add 
+			if (count % 11 === 0) {
+				titleStatus.innerText = `[Spam protection. Please wait...]`;
+				await new Promise(r => setTimeout(r, 5000));
+			}
+		}
+
+		titleStatus.innerText = "[Finished]";
+	};
+
+
+
+
+
+
+
+
+
+
+
+	// ? =================================
+	// ? Add download buttons on view image page
+	// ? =================================
+	let previewEl = document.querySelector('a.preview');
+	let imageLinkViewImage = previewEl ? previewEl.href : null;
+	if (imageLinkViewImage) {
+		console.log("[ANTNG2] Add download button on view image page");
+		// add div in div#large
+		let largeDiv = document.querySelector('div#large');
+		let largeHTML = `
+		<button style="margin 0 auto; max-width: 600px; margin:0 auto;  background-color: #fe8001; color: #fff; border: none; padding: 10px; cursor: pointer" id="antg2-downloadViewImage" onclick="DownloadViewImage('${imageLinkViewImage}')"">
+			Download image full size
+		</button>
+		`;
+
+		let largeDivDownload = document.createElement('div');
+		largeDivDownload.innerHTML = largeHTML;
+		largeDiv.appendChild(largeDivDownload);
+	}
+
+	window.DownloadViewImage = async function (imageLinkViewImage) {
+		document.querySelector("#antg2-downloadViewImage").innerText = "Downloading...";
+		let r = await downloadItem(imageLinkViewImage, imageLinkViewImage.split('/').pop());
+
+		if (r) {
+			document.querySelector("#antg2-downloadViewImage").innerText = "Downloaded";
+		} else {
+			document.querySelector("#antg2-downloadViewImage").innerText = "Download failed";
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// ? =================================
 	// ? Add information tag in the footer
+	// ? =================================
 	let footer = document.querySelector('footer');
 	let footerPhone = document.querySelector('div#footer');
 
@@ -289,13 +476,18 @@
 	</div>
 	`;
 
-	if(footer){
+	if (footer) {
 		infoDiv.innerHTML = infoHTML;
 		footer.appendChild(infoDiv);
+
+		document.querySelector("footer > p").innerHTML += ` | <a href="https://github.com/anytngv2/zerochan-instant-image-downloader" target="_blank">Zerochan Instant Image Downloader</a>`
 	}
 
-	if(footerPhone){
+	if (footerPhone) {
 		infoDiv.innerHTML = infoHTML;
 		footerPhone.appendChild(infoDiv);
+
+		document.querySelector("div#footer > p").innerHTML += ` | <a href="https://github.com/anytngv2/zerochan-instant-image-downloader" target="_blank">Zerochan Instant Image Downloader</a>`
+
 	}
 })();
