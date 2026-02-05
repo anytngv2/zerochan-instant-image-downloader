@@ -1,25 +1,34 @@
 // ==UserScript==
-// @name Zerochan instant image downloader
-// @namespace https://github.com/anytngv2/zerochan-instant-image-downloader
-// @supportURL https://github.com/anytngv2/zerochan-instant-image-downloader
-// @version 2.2
-// @description Allow to instant download images from Zerochan
-// @author AnytngV2
-// @match https://*.zerochan.net/*
-// @icon https://static.zerochan.net/favicon.png
-// @license MIT
-// @compatible chrome
-// @compatible edge
-// @compatible firefox
-// @compatible waterfox
-// @compatible librewolf
-// @compatible safari
-// @compatible brave
-// @grant none
+// @name 			Zerochan instant image downloader
+// @namespace 		https://github.com/anytngv2/zerochan-instant-image-downloader
+// @supportURL 		https://github.com/anytngv2/zerochan-instant-image-downloader
+// @version 		2.3
+// @description 	Allow to instant download images from Zerochan
+// @author 			AnytngV2
+// @match 			https://*.zerochan.net/*
+// @icon 			https://static.zerochan.net/favicon.png
+// @license 		MIT
+// @compatible 		chrome
+// @compatible 		edge
+// @compatible 		firefox
+// @compatible 		waterfox
+// @compatible 		librewolf
+// @compatible 		safari
+// @compatible 		brave
+// @grant 			none
+// @run-at 			document-end
+// @updateURL 		https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader
+// @downloadURL 	https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader
 // ==/UserScript==
 
 (function () {
 	'use strict';
+
+
+	// ! information added in the footer of zerochan for information about the script
+	const INFOTAG = {
+		"version": "2.3",
+	}
 
 
 	/**
@@ -252,4 +261,41 @@
 			addDownloadButtons();
 		}
 	});
+
+	// ? Add information tag in the footer
+	let footer = document.querySelector('footer');
+	let footerPhone = document.querySelector('div#footer');
+
+	let infoDiv = document.createElement('div');
+	let infoHTML = `
+	<div style="text-align:center; font-size: 14px; border:1px solid #000; padding:10px; border-radius:10px; max-width: 400px; margin: 10px auto; display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center">
+		<div style="margin:0;padding:0;line-height: unset !important;"><b>Zerochan Instant Image Downloader</b></div>
+		<div style="margin:0;padding:0;line-height: unset !important;">Created by <a href="https://github.com/anytngv2" target="_blank">AnytngV2</a> | <a href="https://github.com/anytngv2/zerochan-instant-image-downloader" target="_blank">GitHub</a> | <a href="https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader" target="_blank">Greasy Fork</a></div>
+        <div style="margin:0; padding:0; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px">
+			<span>
+                <img src="https://img.shields.io/badge/Your%20version-${INFOTAG.version}-97c800" alt="Static Badge">
+			</span>
+			<span>
+				<a href="https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader" target="_blank">
+					<img alt="Greasy Fork Version" src="https://img.shields.io/greasyfork/v/565142?logo=greasyfork&color=%23670000">
+				</a>
+			</span>
+            <span>
+                <a href="https://github.com/anytngv2/zerochan-instant-image-downloader" target="_blank">
+                    <img alt="Github Version" src="https://img.shields.io/github/v/release/AnytngV2/Zerochan-Instant-Image-Downloader?logo=github">
+                </a>
+            </span>
+		</div>
+	</div>
+	`;
+
+	if(footer){
+		infoDiv.innerHTML = infoHTML;
+		footer.appendChild(infoDiv);
+	}
+
+	if(footerPhone){
+		infoDiv.innerHTML = infoHTML;
+		footerPhone.appendChild(infoDiv);
+	}
 })();
