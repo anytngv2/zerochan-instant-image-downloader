@@ -2,7 +2,7 @@
 
 <div align="center">
 
-A userscript that adds instant download buttons to images on Zerochan.net, allowing you to download full-resolution wallpapers directly from the gallery pages.
+A userscript that adds instant download buttons to images on Zerochan.net, allowing you to download full-resolution wallpapers directly from the gallery pages. Allow bulk download too.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Greasy Fork Version](https://img.shields.io/greasyfork/v/565142?logo=greasyfork&color=%23670000)](https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader)
@@ -17,11 +17,10 @@ A userscript that adds instant download buttons to images on Zerochan.net, allow
 ## Features
 
 - Adds download buttons to each image thumbnail on Zerochan pages
+- Bulk download
 - Work on ***PC*** and ***mobile browsers***
 - Downloads images in their original full resolution
 - No need to navigate to individual image pages
-- Lightweight and easy to install
-- Bulk download
 - Added a button to directly download the full-size image in preview mode.
 - Displays the version of your script and the latest version available in the footer of the site
 
@@ -44,7 +43,7 @@ A userscript that adds instant download buttons to images on Zerochan.net, allow
 ### Option 3: Using Greasy Fork
 
 1. Install a userscript manager like [Tampermonkey](https://www.tampermonkey.net/).
-2. Visit the script page on [Greasy Fork](https://greasyfork.org/fr/scripts/565069-alphacoders-bulk-image-downloader) and search for "Zerochan instant image downloader".
+2. Visit the script page on [Greasy Fork](https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader) and search for "Zerochan instant image downloader".
 3. Click the "Install" button on the script page.
 
 ## Usage
