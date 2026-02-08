@@ -1,8 +1,8 @@
 # Zerochan Instant Image Downloader
 
 <div align="center">
-
-A userscript that adds instant download buttons to images on Zerochan.net, allowing you to download full-resolution wallpapers directly from the gallery pages. Allow bulk download too.
+  
+Zerochan Instant Image Downloader is a userscript that adds instant and bulk download buttons to Zerochan.net, letting you download full-resolution images directly from gallery and preview pages on PC and mobile, without opening individual image pages.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Greasy Fork Version](https://img.shields.io/greasyfork/v/565142?logo=greasyfork&color=%23670000)](https://greasyfork.org/fr/scripts/565142-zerochan-instant-image-downloader)
@@ -70,5 +70,6 @@ A userscript that adds instant download buttons to images on Zerochan.net, allow
 
 ## Note
 The script listens for page loads on Zerochan.net and dynamically adds download buttons to each image thumbnail. When clicked, these buttons fetch the full-resolution image URL and trigger a download without navigating away from the gallery page.
+
 
 If you are on phone, the code needs to fetch the json again with &screen=1 to get json data because phone mode don't load the json by default. And we try to fetch again with &mobile=1 because Zerochan switch user to pc version if you request the json with screen=1.
